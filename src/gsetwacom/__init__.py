@@ -62,7 +62,7 @@ def list_devices():
             name = next(device.ancestors).get("NAME")
 
         # udev NAME is already in quotes
-        print(f"- {name} ({vid:04X}:{pid:04X})")
+        click.echo(f"- {name} ({vid:04X}:{pid:04X})")
 
 
 @gsetwacom.group()
@@ -89,7 +89,7 @@ def tablet_show(ctx):
     settings = ctx.obj.settings
     keys = ("area", "keep-aspect", "left-handed", "mapping", "output")
     for key in keys:
-        print(f"{key}={settings.get_value(key)}")
+        click.echo(f"{key}={settings.get_value(key)}")
 
 
 @tablet.command(name="set-left-handed")
@@ -323,7 +323,7 @@ def stylus_show(ctx):
         "tertiary-button-action",
     )
     for key in keys:
-        print(f"{key}={settings.get_value(key)}")
+        click.echo(f"{key}={settings.get_value(key)}")
 
 
 @stylus.command(name="set-pressure-curve")

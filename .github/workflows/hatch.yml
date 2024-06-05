@@ -1,0 +1,35 @@
+name: hatch
+on: [push, pull_request]
+
+env:
+  UBUNTU_PACKAGES: python3-gi
+  PIP_PACKAGES: hatch
+
+jobs:
+  hatch-fmt:
+    name: hatch format
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: linuxwacom/libwacom/.github/actions/pkginstall@master
+        with:
+          apt: $UBUNTU_PACKAGES
+          pip: $PIP_PACKAGES
+      - run: hatch fmt --check
+
+  hatch-test:
+    name: hatch run test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: linuxwacom/libwacom/.github/actions/pkginstall@master
+        with:
+          apt: $UBUNTU_PACKAGES gobject-introspection pkgconf libcairo2-dev libgirepository-1.0-dev
+          pip: $PIP_PACKAGES
+      - run: hatch run test

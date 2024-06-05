@@ -2,16 +2,16 @@
 #
 # SPDX-License-Identifier: MIT
 
+import logging
+import os
+import string
 from dataclasses import dataclass
 from pathlib import Path
-from lxml import etree
-from gi.repository import Gio, GLib  # type: ignore
-import os
-import logging
-import string
 
 import click
 import rich.logging
+from gi.repository import Gio, GLib  # type: ignore
+from lxml import etree
 
 logger = logging.getLogger("uji")
 logger.addHandler(rich.logging.RichHandler())
@@ -74,7 +74,7 @@ def tablet(ctx, device):
 
     DEVICE is a vendor/product ID tuple in the form 1234:abcd.
     """
-    vid, pid = [int(x, 16) for x in device.split(":")]
+    vid, pid = (int(x, 16) for x in device.split(":"))
     path = f"/org/gnome/desktop/peripherals/tablets/{vid:04x}:{pid:04x}/"
     schema = "org.gnome.desktop.peripherals.tablet"
     ctx.obj = Settings(path, Gio.Settings.new_with_path(schema, path))
@@ -297,7 +297,7 @@ def stylus(ctx, stylus):
     tool serials it is the vendor/product ID tuple of the tablet in the form 1234:abcd.
     """
     if ":" in stylus:
-        vid, pid = [int(x, 16) for x in stylus.split(":")]
+        vid, pid = (int(x, 16) for x in stylus.split(":"))
         serial = f"default-{vid:04x}:{pid:04x}"
     else:
         serial = int(stylus, 16)

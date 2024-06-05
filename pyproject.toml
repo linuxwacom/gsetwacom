@@ -40,6 +40,11 @@ Documentation = "https://github.com/unknown/gsetwacom#readme"
 Issues = "https://github.com/unknown/gsetwacom/issues"
 Source = "https://github.com/unknown/gsetwacom"
 
+[tool.ruff]
+# Match the hatch default so we can run ruff *or* hatch fmt
+# and get the same result
+line-length = 120
+
 [tool.ruff.lint]
 ignore = [
   "FBT001",  # FBT001 Boolean-typed positional argument in function definition

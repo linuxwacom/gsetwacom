@@ -218,9 +218,7 @@ def tablet_map_to_monitor(
 
 
 def change_action(path: str, action: str, keybinding: str | None):
-    settings = Gio.Settings.new_with_path(
-        "org.gnome.desktop.peripherals.tablet.pad-button", path
-    )
+    settings = Gio.Settings.new_with_path("org.gnome.desktop.peripherals.tablet.pad-button", path)
 
     if action == "keybinding":
         if keybinding is None:
@@ -252,18 +250,14 @@ def change_action(path: str, action: str, keybinding: str | None):
     default="cw",
     help="The ring movement direction",
 )
-@click.argument(
-    "action", type=click.Choice(["none", "help", "switch-monitor", "keybinding"])
-)
+@click.argument("action", type=click.Choice(["none", "help", "switch-monitor", "keybinding"]))
 @click.argument(
     "keybinding",
     type=str,
     required=False,
 )
 @click.pass_context
-def tablet_set_ring_action(
-    ctx, ring: int, mode: int, direction: str, action: str, keybinding: str | None
-):
+def tablet_set_ring_action(ctx, ring: int, mode: int, direction: str, action: str, keybinding: str | None):
     """
     Change the action the tablet ring is mapped to for a movement direction and in a given mode.
     """
@@ -282,18 +276,14 @@ def tablet_set_ring_action(
     default="cw",
     help="The strip movement direction",
 )
-@click.argument(
-    "action", type=click.Choice(["none", "help", "switch-monitor", "keybinding"])
-)
+@click.argument("action", type=click.Choice(["none", "help", "switch-monitor", "keybinding"]))
 @click.argument(
     "keybinding",
     type=str,
     required=False,
 )
 @click.pass_context
-def tablet_set_strip_action(
-    ctx, strip: int, mode: int, direction: str, action: str, keybinding: str | None
-):
+def tablet_set_strip_action(ctx, strip: int, mode: int, direction: str, action: str, keybinding: str | None):
     """
     Change the action the tablet strip is mapped to for a movement direction and in a given mode.
     """
@@ -305,9 +295,7 @@ def tablet_set_strip_action(
 
 @tablet.command(name="set-button-action")
 @click.argument("button", type=click.Choice(string.ascii_uppercase))
-@click.argument(
-    "action", type=click.Choice(["none", "help", "switch-monitor", "keybinding"])
-)
+@click.argument("action", type=click.Choice(["none", "help", "switch-monitor", "keybinding"]))
 @click.argument(
     "keybinding",
     type=str,
@@ -384,9 +372,7 @@ def stylus_set_left_handed(ctx, eraser: bool, x1: int, y1: int, x2: int, y2: int
 
 @stylus.command(name="set-button-action")
 @click.argument("button", type=click.Choice(["primary", "secondary", "tertiary"]))
-@click.argument(
-    "action", type=click.Choice(["left", "middle", "right", "back", "forward"])
-)
+@click.argument("action", type=click.Choice(["left", "middle", "right", "back", "forward"]))
 @click.pass_context
 def stylus_set_button_action(ctx, button: str, action: str):
     """

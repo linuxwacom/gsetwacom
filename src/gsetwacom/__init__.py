@@ -8,6 +8,7 @@ from lxml import etree
 from gi.repository import Gio, GLib  # type: ignore
 import os
 import logging
+import string
 
 import click
 import rich.logging
@@ -19,6 +20,7 @@ logger.setLevel(logging.ERROR)
 
 @dataclass
 class Settings:
+    path: str
     settings: Gio.Settings | None
 
 
@@ -75,7 +77,7 @@ def tablet(ctx, device):
     vid, pid = [int(x, 16) for x in device.split(":")]
     path = f"/org/gnome/desktop/peripherals/tablets/{vid:04x}:{pid:04x}/"
     schema = "org.gnome.desktop.peripherals.tablet"
-    ctx.obj = Settings(Gio.Settings.new_with_path(schema, path))
+    ctx.obj = Settings(path, Gio.Settings.new_with_path(schema, path))
 
 
 @tablet.command(name="show")
@@ -180,6 +182,110 @@ def tablet_map_to_monitor(
         break
 
 
+def change_action(path: str, action: str, keybinding: str | None):
+    settings = Gio.Settings.new_with_path(
+        "org.gnome.desktop.peripherals.tablet.pad-button", path
+    )
+
+    if action == "keybinding":
+        if keybinding is None:
+            raise click.UsageError("Keybinding must be provided for action keybinding")
+    else:
+        if keybinding is not None:
+            raise click.UsageError("Keybinding is only valid for action keybinding")
+
+    val = {
+        "none": 0,
+        "help": 1,
+        "switch-monitor": 2,
+        "keybinding": 3,
+    }[action]
+
+    if keybinding is not None:
+        settings.set_string("keybinding", keybinding)
+    settings.set_enum("action", val)
+
+
+@tablet.command(name="set-ring-action")
+@click.option("--ring", type=int, default=1, help="The ring number to change")
+@click.option("--mode", type=int, default=0, help="The zero-indexed mode")
+@click.option(
+    "--direction",
+    type=click.Choice(["cw", "ccw"]),
+    default="cw",
+    help="The ring movement direction",
+)
+@click.argument(
+    "action", type=click.Choice(["none", "help", "switch-monitor", "keybinding"])
+)
+@click.argument(
+    "keybinding",
+    type=str,
+    required=False,
+)
+@click.pass_context
+def tablet_set_ring_action(
+    ctx, ring: int, mode: int, direction: str, action: str, keybinding: str | None
+):
+    """
+    Change the action the tablet ring is mapped to for a movement direction and in a given mode.
+    """
+    r = chr(ord("A") + ring - 1)  # ring 1 -> ringA
+    subpath = f"ring{r}-{direction}-mode-{mode}"
+    path = f"{ctx.obj.path}{subpath}/"
+    change_action(path, action, keybinding)
+
+
+@tablet.command(name="set-strip-action")
+@click.option("--strip", type=int, default=1, help="The strip number to change")
+@click.option("--mode", type=int, default=0, help="The zero-indexed mode")
+@click.option(
+    "--direction",
+    type=click.Choice(["up", "down"]),
+    default="cw",
+    help="The strip movement direction",
+)
+@click.argument(
+    "action", type=click.Choice(["none", "help", "switch-monitor", "keybinding"])
+)
+@click.argument(
+    "keybinding",
+    type=str,
+    required=False,
+)
+@click.pass_context
+def tablet_set_strip_action(
+    ctx, strip: int, mode: int, direction: str, action: str, keybinding: str | None
+):
+    """
+    Change the action the tablet strip is mapped to for a movement direction and in a given mode.
+    """
+    r = chr(ord("A") + strip - 1)  # strip 1 -> stripA
+    subpath = f"strip{r}-{direction}-mode-{mode}"
+    path = f"{ctx.obj.path}{subpath}/"
+    change_action(path, action, keybinding)
+
+
+@tablet.command(name="set-button-action")
+@click.argument("button", type=click.Choice(string.ascii_uppercase))
+@click.argument(
+    "action", type=click.Choice(["none", "help", "switch-monitor", "keybinding"])
+)
+@click.argument(
+    "keybinding",
+    type=str,
+    required=False,
+)
+@click.pass_context
+def tablet_set_button_action(ctx, button: str, action: str, keybinding: str | None):
+    """
+    Change the action the tablet button is mapped to.
+    """
+    subpath = f"button{button}"
+    path = f"{ctx.obj.path}{subpath}/"
+    change_action(path, action, keybinding)
+
+
 @gsetwacom.group()
 @click.argument("stylus", type=str)
 @click.pass_context
@@ -199,7 +305,7 @@ def stylus(ctx, stylus):
 
     path = f"/org/gnome/desktop/peripherals/stylus/{serial}/"
     schema = "org.gnome.desktop.peripherals.tablet.stylus"
-    ctx.obj = Settings(Gio.Settings.new_with_path(schema, path))
+    ctx.obj = Settings(path, Gio.Settings.new_with_path(schema, path))
 
 
 @stylus.command(name="show")

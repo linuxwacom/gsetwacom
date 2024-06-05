@@ -5,7 +5,7 @@
 gsetwacom is a commandline utility that changes tablet configuration in
 GNOME. It provides a CLI around the GSettings schemas that allows.
 
-The name is a reference to the xsetwacom tool that provided a similar CLI 
+The name is a reference to the xsetwacom tool that provided a similar CLI
 for the [xf86-input-wacom Xorg driver](https://github.com/linuxwacom/xf86-input-wacom).
 
 -----

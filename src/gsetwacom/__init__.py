@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+from __future__ import annotations
+
 import logging
 import os
 import string
@@ -27,8 +29,7 @@ class Settings:
 @click.group()
 @click.option("-v", "--verbose", count=True, help="increase verbosity")
 @click.option("--quiet", "verbose", flag_value=0)
-@click.pass_context
-def gsetwacom(ctx, verbose: int):
+def gsetwacom(verbose: int):
     verbose_levels = {
         0: logging.ERROR,
         1: logging.INFO,
@@ -157,9 +158,8 @@ def tablet_map_to_monitor(
         "serial": serial,
     }
     if all(args[key] is None for key in args):
-        raise click.UsageError(
-            "One of --vendor, --product, --serial or --connector has to be provided"
-        )
+        msg = "One of --vendor, --product, --serial or --connector has to be provided"
+        raise click.UsageError(msg)
 
     for monitor in monitors.iterfind(".//monitorspec"):
         data = {
@@ -189,10 +189,12 @@ def change_action(path: str, action: str, keybinding: str | None):
 
     if action == "keybinding":
         if keybinding is None:
-            raise click.UsageError("Keybinding must be provided for action keybinding")
+            msg = "Keybinding must be provided for action keybinding"
+            raise click.UsageError(msg)
     else:
         if keybinding is not None:
-            raise click.UsageError("Keybinding is only valid for action keybinding")
+            msg = "Keybinding is only valid for action keybinding"
+            raise click.UsageError(msg)
 
     val = {
         "none": 0,

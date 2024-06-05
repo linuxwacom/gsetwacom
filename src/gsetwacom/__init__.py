@@ -87,7 +87,7 @@ def tablet_show(ctx):
     Show the current configuraton of the given tablet DEVICE.
     """
     settings = ctx.obj.settings
-    keys = ("area", "keep-aspect", "mapping", "output")
+    keys = ("area", "keep-aspect", "left-handed", "mapping", "output")
     for key in keys:
         print(f"{key}={settings.get_value(key)}")
 

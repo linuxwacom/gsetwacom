@@ -191,7 +191,7 @@ def change_action(path: str, action: str, keybinding: str | None):
         if keybinding is None:
             msg = "Keybinding must be provided for action keybinding"
             raise click.UsageError(msg)
-    else:
+    else:  # noqa: PLR5501
         if keybinding is not None:
             msg = "Keybinding is only valid for action keybinding"
             raise click.UsageError(msg)

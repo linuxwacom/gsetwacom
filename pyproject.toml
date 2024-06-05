@@ -40,6 +40,12 @@ Documentation = "https://github.com/unknown/gsetwacom#readme"
 Issues = "https://github.com/unknown/gsetwacom/issues"
 Source = "https://github.com/unknown/gsetwacom"
 
+[tool.ruff.lint]
+ignore = [
+  "FBT001",  # FBT001 Boolean-typed positional argument in function definition
+  "S320",    # S320 Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
+]
+
 [tool.hatch.version]
 path = "src/gsetwacom/__about__.py"
 

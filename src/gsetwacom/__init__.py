@@ -297,7 +297,7 @@ def stylus(ctx, stylus):
     tool serials it is the vendor/product ID tuple of the tablet in the form 1234:abcd.
     """
     if ":" in stylus:
-        vid, pid = [int(x, 16) for x in device.split(":")]
+        vid, pid = [int(x, 16) for x in stylus.split(":")]
         serial = f"default-{vid:04x}:{pid:04x}"
     else:
         serial = int(stylus, 16)

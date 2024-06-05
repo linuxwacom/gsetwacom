@@ -180,6 +180,91 @@ def tablet_map_to_monitor(
         break
 
 
+@gsetwacom.group()
+@click.argument("stylus", type=str)
+@click.pass_context
+def stylus(ctx, stylus):
+    """
+    Show or change configuration for a stylus tool.
+
+    STYLUS is a hexadecimal tool serial or for tools that do not support unique
+    tool serials it is the vendor/product ID tuple of the tablet in the form 1234:abcd.
+    """
+    if ":" in stylus:
+        vid, pid = [int(x, 16) for x in device.split(":")]
+        serial = f"default-{vid:04x}:{pid:04x}"
+    else:
+        serial = int(stylus, 16)
+        serial = f"{serial:x}"
+
+    path = f"/org/gnome/desktop/peripherals/stylus/{serial}/"
+    schema = "org.gnome.desktop.peripherals.tablet.stylus"
+    ctx.obj = Settings(Gio.Settings.new_with_path(schema, path))
+
+
+@stylus.command(name="show")
+@click.pass_context
+def stylus_show(ctx):
+    """
+    Show the current configuraton of the given STYLUS.
+    """
+    settings = ctx.obj.settings
+    keys = (
+        "pressure-curve",
+        "eraser-pressure-curve",
+        "button-action",
+        "secondary-button-action",
+        "tertiary-button-action",
+    )
+    for key in keys:
+        print(f"{key}={settings.get_value(key)}")
+
+
+@stylus.command(name="set-pressure-curve")
+@click.option("--eraser", is_flag=True, help="Change the eraser pressure curve")
+@click.argument("x1", type=float)
+@click.argument("y1", type=float)
+@click.argument("x2", type=float)
+@click.argument("y2", type=float)
+@click.pass_context
+def stylus_set_left_handed(ctx, eraser: bool, x1: int, y1: int, x2: int, y2: int):
+    """
+    Change the pressure configuration of this stylus or eraser.
+
+    The given arguments must be in the range [0, 100] and describe the two points BC
+    of a bezier curve ABCD where A = (0, 0) and D = (100, 100).
+    """
+    settings = ctx.obj.settings
+    key = "eraser-pressure-curve" if eraser else "pressure-curve"
+    settings.set_value(key, GLib.Variant("ai", [x1, y1, x2, y2]))
+
+
+@stylus.command(name="set-button-action")
+@click.argument("button", type=click.Choice(["primary", "secondary", "tertiary"]))
+@click.argument(
+    "action", type=click.Choice(["left", "middle", "right", "back", "forward"])
+)
+@click.pass_context
+def stylus_set_button_action(ctx, button: str, action: str):
+    """
+    Change the button action of this stylus or eraser.
+    """
+    settings = ctx.obj.settings
+    key = "button-action"
+    if button != "primary":
+        key = f"{button}-{key}"
+
+    #
+    val = {
+        "left": 0,
+        "middle": 1,
+        "right": 2,
+        "back": 3,
+        "forward": 4,
+    }[action]
+    settings.set_enum(key, val)
+
+
 def main():
     gsetwacom()
 

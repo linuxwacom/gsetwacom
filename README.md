@@ -37,10 +37,15 @@ For details on any command see `gsetwacom --help` or `gsetwacom <command> --help
 Examples for tablet configuration:
 ```
 $ gsetwacom list-devices
-- "HUION Huion Tablet_H641P Pen" (256C:0066)
-- "Wacom Intuos Pro M Pen" (056A:0357)
-- "Wacom Intuos Pro M Pad" (056A:0357)
-- "Wacom Intuos Pro M Finger" (056A:0357)
+devices:
+- name: "HUION Huion Tablet_H641P Pen"
+  usbid: "256C:0066"
+- name: "Wacom Intuos Pro M Pen"
+  usbid: "056A:0357"
+- name: "Wacom Intuos Pro M Pad"
+  usbid: "056A:0357"
+- name: "Wacom Intuos Pro M Finger"
+  usbid: "056A:0357"
 
 $ gsetwacom tablet "056A:0357" show
 area=[0.0, 0.0, 0.0, 0.0]

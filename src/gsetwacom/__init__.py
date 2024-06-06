@@ -76,6 +76,31 @@ def list_devices():
         click.secho("No devices found")
 
 
+@gsetwacom.command()
+def list_styli():
+    """
+    List the styli previously seen on this system.
+
+    Only styli with unique serial numbers are listed.
+
+    This currently uses the gnome-control-center cache file, a device may not
+    be available until it has been brought into proximity above the
+    control center.
+    """
+    from configparser import ConfigParser
+
+    xdg = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    config = ConfigParser()
+    config.read(xdg / "gnome-control-center" / "wacom" / "tools")
+    if not config.sections():
+        click.secho("No styli found")
+        return
+
+    click.echo("styli:")
+    for section in config.sections():
+        click.echo(f" - serial number: {section}")
+
+
 @gsetwacom.group()
 @click.argument("device", type=str)
 @click.pass_context

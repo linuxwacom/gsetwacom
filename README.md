@@ -89,8 +89,12 @@ This is an inherent limitation of relocatable GSettings. To add this type of err
 currently implemented.
 
 ### No serial number detection
+
 `gsetwacom` cannot detect a stylus serial number, external tools need to be used to
-find the serial number of a stylus.
+find the serial number of a stylus. The `gsetwacom list-styli` tool currently uses
+the gnome-control-center (GNOME Settings) cache file for styli - this only works
+where GNOME Settings has "seen" the stylus before by bringing it into proximity
+above the GNOME Settings window.
 
 ## License
 

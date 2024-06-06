@@ -48,6 +48,8 @@ def list_devices():
     """
     import pyudev
 
+    have_devices = False
+
     context = pyudev.Context()
     for device in filter(
         lambda d: Path(d.sys_path).name.startswith("event"),
@@ -62,8 +64,16 @@ def list_devices():
         if name is None:
             name = next(device.ancestors).get("NAME")
 
+        if not have_devices:
+            click.echo("devices:")
+            have_devices = True
+
         # udev NAME is already in quotes
-        click.echo(f"- {name} ({vid:04X}:{pid:04X})")
+        click.echo(f"- name: {name}")
+        click.echo(f'  usbid: "{vid:04X}:{pid:04X}"')
+
+    if not have_devices:
+        click.secho("No devices found")
 
 
 @gsetwacom.group()

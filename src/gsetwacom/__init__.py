@@ -383,7 +383,7 @@ def stylus_show(ctx):
 @click.argument("x2", type=float)
 @click.argument("y2", type=float)
 @click.pass_context
-def stylus_set_left_handed(ctx, eraser: bool, x1: int, y1: int, x2: int, y2: int):
+def stylus_set_pressure_curve(ctx, eraser: bool, x1: int, y1: int, x2: int, y2: int):
     """
     Change the pressure configuration of this stylus or eraser.
 

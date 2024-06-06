@@ -26,7 +26,7 @@ classifiers = [
 ]
 dependencies = [
   "click",
-  "lxml",
+  "dbus-fast",
   "pygobject",
   "pyudev",
   "rich",

@@ -4,16 +4,19 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import string
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from functools import wraps
 from pathlib import Path
 
 import click
+import dbus_fast
+import dbus_fast.aio
 import rich.logging
 from gi.repository import Gio, GLib  # type: ignore
-from lxml import etree
 
 logger = logging.getLogger("uji")
 logger.addHandler(rich.logging.RichHandler())
@@ -164,13 +167,22 @@ def tablet_set_area(ctx, x1: float, y1: float, x2: float, y2: float):
     settings.set_value("area", GLib.Variant("ad", [x1, y1, x2, y2]))
 
 
+def coro(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        return asyncio.run(f(*args, **kwargs))
+
+    return wrapper
+
+
 @tablet.command(name="map-to-monitor")
+@coro
 @click.option("--vendor", type=str, default=None)
 @click.option("--product", type=str, default=None)
 @click.option("--serial", type=str, default=None)
 @click.option("--connector", type=str, default=None)
 @click.pass_context
-def tablet_map_to_monitor(
+async def tablet_map_to_monitor(
     ctx,
     vendor: str | None,
     product: str | None,
@@ -180,12 +192,7 @@ def tablet_map_to_monitor(
     """
     Map the tablet to a given monitor. The monitor may be specified with one or more
     of the vendor, product, serial or connector.
-
-    Note: this only works if the $XDG_CONFIG_HOME/monitors.xml file only
-    has one matching configuration per screen for the given set of specifiers.
     """
-    xdg = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
-    monitors = etree.parse(xdg / "monitors.xml")
     args = {
         "connector": connector,
         "vendor": vendor,
@@ -196,25 +203,43 @@ def tablet_map_to_monitor(
         msg = "One of --vendor, --product, --serial or --connector has to be provided"
         raise click.UsageError(msg)
 
-    for monitor in monitors.iterfind(".//monitorspec"):
-        data = {
-            "connector": monitor.find("connector").text,
-            "vendor": monitor.find("vendor").text,
-            "product": monitor.find("product").text,
-            "serial": monitor.find("serial").text,
-        }
-        if any(args[key] is not None and args[key] != data[key] for key in args):
-            continue
+    bus = await dbus_fast.aio.MessageBus().connect()
+    busname = "org.gnome.Mutter.DisplayConfig"
+    objpath = "/org/gnome/Mutter/DisplayConfig"
+    intf = "org.gnome.Mutter.DisplayConfig"
+    introspection = await bus.introspect(busname, objpath)
 
+    proxy_object = bus.get_proxy_object(busname, objpath, introspection)
+    interface = proxy_object.get_interface(intf)
+
+    state = await interface.call_get_current_state()
+    _, monitors, _, _ = state  # serial, monitors, logical_monitors, properties
+
+    @dataclass
+    class Monitor:
+        connector: str
+        vendor: str
+        product: str
+        serial: str
+
+    monitors = (Monitor(*mdata) for (mdata, *_) in monitors)
+
+    for monitor in monitors:
+        logger.info("Monitor on %s vendor '%s' product '%s' serial '%s'", *asdict(monitor).values())
+        if any(args[key] is not None and args[key] != getattr(monitor, key) for key in args):
+            continue
         settings = ctx.obj.settings
         settings.set_value(
             "output",
             GLib.Variant(
                 "as",
-                [data["vendor"], data["product"], data["serial"], data["connector"]],
+                [monitor.vendor, monitor.product, monitor.serial, monitor.connector],
             ),
         )
         break
+    else:
+        msg = "Unable to find this monitor in the current configuration"
+        raise click.UsageError(msg)
 
 
 def change_action(path: str, action: str, keybinding: str | None):

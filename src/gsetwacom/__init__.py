@@ -127,8 +127,9 @@ def tablet_show(ctx):
     """
     settings = ctx.obj.settings
     keys = ("area", "keep-aspect", "left-handed", "mapping", "output")
+    click.echo("settings:")
     for key in keys:
-        click.echo(f"{key}={settings.get_value(key)}")
+        click.echo(f"  {key}: {settings.get_value(key)}")
 
 
 @tablet.command(name="set-left-handed")
@@ -386,8 +387,9 @@ def stylus_show(ctx):
         "secondary-button-action",
         "tertiary-button-action",
     )
+    click.echo("settings:")
     for key in keys:
-        click.echo(f"{key}={settings.get_value(key)}")
+        click.echo(f"  {key}: {settings.get_value(key)}")
 
 
 @stylus.command(name="set-pressure-curve")

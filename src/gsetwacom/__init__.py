@@ -63,7 +63,11 @@ def list_tablets():
         lambda d: Path(d.sys_path).name.startswith("event"),
         context.list_devices(subsystem="input"),
     ):
-        if device.get("ID_INPUT_TABLET", "0") != "1":
+        if (
+            device.get("ID_INPUT_TABLET", "0") != "1"
+            or device.get("ID_INPUT_TABLET_PAD", "0") == "1"
+            or device.get("ID_INPUT_TOUCHPAD", "0") == "1"
+        ):
             continue
 
         vid = int(device.get("ID_VENDOR_ID", "0"), 16)

@@ -51,8 +51,13 @@ def list_tablets():
     """
     import pyudev
 
-    have_devices = False
+    @dataclass
+    class Tablet:
+        name: str
+        vid: int
+        pid: int
 
+    tablets = []
     context = pyudev.Context()
     for device in filter(
         lambda d: Path(d.sys_path).name.startswith("event"),
@@ -66,17 +71,17 @@ def list_tablets():
         name = device.get("NAME")
         if name is None:
             name = next(device.ancestors).get("NAME")
+        name = name.lstrip('"').rstrip('"')
+        tablets.append(Tablet(name, vid, pid))
 
-        if not have_devices:
-            click.echo("devices:")
-            have_devices = True
-
-        # udev NAME is already in quotes
-        click.echo(f"- name: {name}")
-        click.echo(f'  usbid: "{vid:04X}:{pid:04X}"')
-
-    if not have_devices:
+    if not tablets:
         click.secho("No devices found")
+        return
+
+    click.echo("devices:")
+    for tablet in tablets:
+        click.echo(f'- name: "{tablet.name}"')
+        click.echo(f'  usbid: "{tablet.vid:04X}:{tablet.pid:04X}"')
 
 
 @gsetwacom.command()

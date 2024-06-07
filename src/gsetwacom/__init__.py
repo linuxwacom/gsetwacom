@@ -42,7 +42,7 @@ def gsetwacom(verbose: int):
 
 
 @gsetwacom.command()
-def list_devices():
+def list_tablets():
     """
     List all potential devices found on this system.
 

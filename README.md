@@ -36,7 +36,7 @@ For details on any command see `gsetwacom --help` or `gsetwacom <command> --help
 
 Examples for tablet configuration:
 ```
-$ gsetwacom list-devices
+$ gsetwacom list-tablets
 devices:
 - name: "HUION Huion Tablet_H641P Pen"
   usbid: "256C:0066"

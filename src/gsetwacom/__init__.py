@@ -392,6 +392,8 @@ def stylus_show(ctx):
     keys = (
         "pressure-curve",
         "eraser-pressure-curve",
+        "pressure-range",
+        "eraser-pressure-range",
         "button-action",
         "secondary-button-action",
         "tertiary-button-action",
@@ -418,6 +420,22 @@ def stylus_set_pressure_curve(ctx, eraser: bool, x1: int, y1: int, x2: int, y2: 
     settings = ctx.obj.settings
     key = "eraser-pressure-curve" if eraser else "pressure-curve"
     settings.set_value(key, GLib.Variant("ai", [x1, y1, x2, y2]))
+
+
+@stylus.command(name="set-pressure-range")
+@click.option("--eraser", is_flag=True, help="Change the eraser pressure range")
+@click.argument("minimum", type=int)
+@click.argument("maximum", type=int)
+@click.pass_context
+def stylus_set_pressure_range(ctx, eraser: bool, minimum: int, maximum: int):
+    """
+    Change the pressure range of this stylus or eraser.
+
+    The given arguments must be in the range [0, 100].
+    """
+    settings = ctx.obj.settings
+    key = "eraser-pressure-range" if eraser else "pressure-range"
+    settings.set_value(key, GLib.Variant("ai", [minimum, maximum]))
 
 
 @stylus.command(name="set-button-action")

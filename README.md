@@ -44,14 +44,14 @@ devices:
   usbid: "056A:0357"
 
 $ gsetwacom tablet "056A:0357" show
-area=[0.0, 0.0, 0.0, 0.0]
-keep-aspect=true
-left-handed=false
-mapping='absolute'
-output=['GSM', 'LG HDR 4K', '308NTXRBZ298', 'DP-1']
+settings:
+  area: [0.0, 0.0, 0.0, 0.0]
+  keep-aspect: true
+  left-handed: false
+  mapping: 'absolute'
+  output: ['GSM', 'LG HDR 4K', '308NTXRBZ298', 'DP-1']
 
 $ gsetwacom tablet "056A:0357" set-left-handed true
-
 $ gsetwacom tablet "056A:0357" set-button-action A keybinding "<Control><Alt>t"
 $ gsetwacom tablet "056A:0357" set-ring-action --direction=cw --mode=2 keybinding "x"
 
@@ -59,12 +59,12 @@ $ gsetwacom tablet "056A:0357" map-to-monitor --connector DP-1
 ```
 And for stylus configuration:
 ```
-$ gsetwacom stylus 99800b93 show
-pressure-curve=[0, 38, 62, 100]
-eraser-pressure-curve=[0, 0, 100, 100]
-button-action='default'
-secondary-button-action='default'
-tertiary-button-action='default'
+settings:
+  pressure-curve: [0, 38, 62, 100]
+  eraser-pressure-curve: [0, 0, 100, 100]
+  button-action: 'default'
+  secondary-button-action: 'default'
+  tertiary-button-action: 'default'
 
 $ gsetwacom stylus 99800b93 set-button-action secondary back
 

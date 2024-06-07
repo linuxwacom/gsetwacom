@@ -42,10 +42,6 @@ devices:
   usbid: "256C:0066"
 - name: "Wacom Intuos Pro M Pen"
   usbid: "056A:0357"
-- name: "Wacom Intuos Pro M Pad"
-  usbid: "056A:0357"
-- name: "Wacom Intuos Pro M Finger"
-  usbid: "056A:0357"
 
 $ gsetwacom tablet "056A:0357" show
 area=[0.0, 0.0, 0.0, 0.0]

@@ -395,6 +395,9 @@ def stylus_show(ctx):
         "button-action",
         "secondary-button-action",
         "tertiary-button-action",
+        "button-keybinding",
+        "secondary-button-keybinding",
+        "tertiary-button-keybinding",
     )
     click.echo("settings:")
     for key in keys:
@@ -422,25 +425,42 @@ def stylus_set_pressure_curve(ctx, eraser: bool, x1: int, y1: int, x2: int, y2: 
 
 @stylus.command(name="set-button-action")
 @click.argument("button", type=click.Choice(["primary", "secondary", "tertiary"]))
-@click.argument("action", type=click.Choice(["left", "middle", "right", "back", "forward"]))
+@click.argument(
+    "action", type=click.Choice(["left", "middle", "right", "back", "forward", "switch-monitor", "keybinding"])
+)
+@click.argument(
+    "keybinding",
+    type=str,
+    required=False,
+)
 @click.pass_context
-def stylus_set_button_action(ctx, button: str, action: str):
+def stylus_set_button_action(ctx, button: str, action: str, keybinding: str | None):
     """
     Change the button action of this stylus or eraser.
     """
-    settings = ctx.obj.settings
-    key = "button-action"
-    if button != "primary":
-        key = f"{button}-{key}"
+    if action == "keybinding":
+        if keybinding is None:
+            msg = "Keybinding must be provided for action keybinding"
+            raise click.UsageError(msg)
+    else:  # noqa: PLR5501
+        if keybinding is not None:
+            msg = "Keybinding is only valid for action keybinding"
+            raise click.UsageError(msg)
 
-    #
-    val = {
-        "left": 0,
-        "middle": 1,
-        "right": 2,
-        "back": 3,
-        "forward": 4,
-    }[action]
+    settings = ctx.obj.settings
+
+    button_prefix = {
+        "primary": "button",
+        "secondary": "secondary-button",
+        "tertiary": "tertiary-button",
+    }[button]
+
+    if keybinding is not None:
+        key = f"{button_prefix}-keybinding"
+        settings.set_string(key, keybinding)
+
+    key = f"{button_prefix}-action"
+    val = {"left": 0, "middle": 1, "right": 2, "back": 3, "forward": 4, "switch-monitor": 5, "keybinding": 6}[action]
     settings.set_enum(key, val)
 
 

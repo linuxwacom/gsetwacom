@@ -155,7 +155,7 @@ def tablet_set_left_handed(ctx, left_handed: bool):
 @tablet.command(name="set-keep-aspect")
 @click.argument("keep-aspect-ratio", type=bool)
 @click.pass_context
-def tablet_set_keep_aspect(ctx, keep_aspect: bool):
+def tablet_set_keep_aspect(ctx, keep_aspect_ratio: bool):
     """
     Change the keep-aspect configuration of this device
 
@@ -163,7 +163,7 @@ def tablet_set_keep_aspect(ctx, keep_aspect: bool):
     to match the aspect ratio of the monitor it is mapped to.
     """
     settings = ctx.obj.settings
-    settings.set_boolean("keep-aspect", keep_aspect)
+    settings.set_boolean("keep-aspect", keep_aspect_ratio)
 
 
 @tablet.command(name="set-absolute")

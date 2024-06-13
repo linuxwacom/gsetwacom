@@ -8,6 +8,10 @@ GNOME. It provides a CLI around the GSettings schemas that allows.
 The name is a reference to the xsetwacom tool that provided a similar CLI
 for the [xf86-input-wacom Xorg driver](https://github.com/linuxwacom/xf86-input-wacom).
 
+gsetwacom only works with GNOME as it uses GNOME's gsetting configuration storage
+mechanism. The [ktabletconfig](https://invent.kde.org/redstrate/ktabletconfig) tool is a
+similar utility for KDE.
+
 -----
 
 **Table of Contents**

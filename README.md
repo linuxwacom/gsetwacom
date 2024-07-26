@@ -62,6 +62,17 @@ $ gsetwacom tablet "056A:0357" set-ring-action --direction=cw --mode=2 keybindin
 
 $ gsetwacom tablet "056A:0357" map-to-monitor --connector DP-1
 ```
+
+A special device name of `first` may be used instead of the vid/pid and will resolve
+to the vid/pid of the first tablet listed by `gsetwacom list-tablets`.
+
+```
+$ gsetwacom tablet "first" show
+```
+Note that unlike the vid/pid configuration, the special value `first` requires
+that the tablet is plugged in. This special value is for debugging only and should not
+be used in scripts.
+
 And for stylus configuration:
 ```
 settings:

@@ -153,9 +153,18 @@ def tablet(ctx, device):
     """
     Show or change configuration for a tablet device.
 
-    DEVICE is a vendor/product ID tuple in the form 1234:abcd.
+    DEVICE is a vendor/product ID tuple in the form 1234:abcd or it may
+    be provided as the special devices "first" as the first device listed by
+    list-tablets. Using "first" requires the tablet to be plugged in.
     """
-    vid, pid = (int(x, 16) for x in device.split(":"))
+    if device == "first":
+        tablet = next(list_tablets(), None)
+        if tablet is None:
+            msg = "Unable to find any devices, cannot use 'first'"
+            raise click.UsageError(msg)
+        vid, pid = tablet.vid, tablet.pid
+    else:
+        vid, pid = (int(x, 16) for x in device.split(":"))
     path = f"/org/gnome/desktop/peripherals/tablets/{vid:04x}:{pid:04x}/"
     schema = "org.gnome.desktop.peripherals.tablet"
     ctx.obj = Settings(path, Gio.Settings.new_with_path(schema, path))

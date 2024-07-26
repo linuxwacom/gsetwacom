@@ -28,6 +28,36 @@ class Settings:
     path: str
     settings: Gio.Settings
 
+    def set_value(self, key, value):
+        if self.has_key(key):
+            self.settings.set_value(key, value)
+        else:
+            click.secho(f"WARNING: {key} does not exist in the schema, ignoring")
+
+    def set_enum(self, key, value):
+        if self.has_key(key):
+            self.settings.set_enum(key, value)
+        else:
+            click.secho(f"WARNING: {key} does not exist in the schema, ignoring")
+
+    def set_string(self, key, value):
+        if self.has_key(key):
+            self.settings.set_string(key, value)
+        else:
+            click.secho(f"WARNING: {key} does not exist in the schema, ignoring")
+
+    def set_boolean(self, key, value):
+        if self.has_key(key):
+            self.settings.set_boolean(key, value)
+        else:
+            click.secho(f"WARNING: {key} does not exist in the schema, ignoring")
+
+    def has_key(self, key) -> bool:
+        return self.settings.props.settings_schema.has_key(key)
+
+    def get_value(self, key):
+        return self.settings.get_value(key)
+
 
 @click.group()
 @click.option("-v", "--verbose", count=True, help="increase verbosity")
@@ -134,10 +164,10 @@ def tablet_show(ctx):
     """
     Show the current configuraton of the given tablet DEVICE.
     """
-    settings = ctx.obj.settings
+    settings = ctx.obj
     keys = ("area", "keep-aspect", "left-handed", "mapping", "output")
     click.echo("settings:")
-    for key in keys:
+    for key in filter(lambda k: settings.has_key(k), keys):
         click.echo(f"  {key}: {settings.get_value(key)}")
 
 
@@ -148,7 +178,7 @@ def tablet_set_left_handed(ctx, left_handed: bool):
     """
     Change the left-handed configuration of this device
     """
-    settings = ctx.obj.settings
+    settings = ctx.obj
     settings.set_boolean("left-handed", left_handed)
 
 
@@ -162,7 +192,7 @@ def tablet_set_keep_aspect(ctx, keep_aspect_ratio: bool):
     A device with keep-aspect enabled will reduce its available area
     to match the aspect ratio of the monitor it is mapped to.
     """
-    settings = ctx.obj.settings
+    settings = ctx.obj
     settings.set_boolean("keep-aspect", keep_aspect_ratio)
 
 
@@ -173,7 +203,7 @@ def tablet_set_absolute(ctx, absolute: bool):
     """
     Change the left-handed configuration of this device
     """
-    settings = ctx.obj.settings
+    settings = ctx.obj
     settings.set_boolean("absolute", "absolute" if absolute else "relative")
 
 
@@ -187,7 +217,7 @@ def tablet_set_area(ctx, x1: float, y1: float, x2: float, y2: float):
     """
     Change the area the tablet is mapped to. All input parameters are percentages.
     """
-    settings = ctx.obj.settings
+    settings = ctx.obj
     settings.set_value("area", GLib.Variant("ad", [x1, y1, x2, y2]))
 
 
@@ -252,7 +282,7 @@ async def tablet_map_to_monitor(
         logger.info("Monitor on %s vendor '%s' product '%s' serial '%s'", *asdict(monitor).values())
         if any(args[key] is not None and args[key] != getattr(monitor, key) for key in args):
             continue
-        settings = ctx.obj.settings
+        settings = ctx.obj
         settings.set_value(
             "output",
             GLib.Variant(
@@ -388,7 +418,7 @@ def stylus_show(ctx):
     """
     Show the current configuraton of the given STYLUS.
     """
-    settings = ctx.obj.settings
+    settings = ctx.obj
     keys = (
         "pressure-curve",
         "eraser-pressure-curve",
@@ -402,7 +432,7 @@ def stylus_show(ctx):
         "tertiary-button-keybinding",
     )
     click.echo("settings:")
-    for key in keys:
+    for key in filter(lambda k: settings.has_key(k), keys):
         click.echo(f"  {key}: {settings.get_value(key)}")
 
 
@@ -420,7 +450,7 @@ def stylus_set_pressure_curve(ctx, eraser: bool, x1: int, y1: int, x2: int, y2: 
     The given arguments must be in the range [0, 100] and describe the two points BC
     of a bezier curve ABCD where A = (0, 0) and D = (100, 100).
     """
-    settings = ctx.obj.settings
+    settings = ctx.obj
     key = "eraser-pressure-curve" if eraser else "pressure-curve"
     settings.set_value(key, GLib.Variant("ai", [x1, y1, x2, y2]))
 
@@ -436,7 +466,7 @@ def stylus_set_pressure_range(ctx, eraser: bool, minimum: int, maximum: int):
 
     The given arguments must be in the range [0, 100].
     """
-    settings = ctx.obj.settings
+    settings = ctx.obj
     key = "eraser-pressure-range" if eraser else "pressure-range"
     settings.set_value(key, GLib.Variant("ai", [minimum, maximum]))
 
@@ -465,7 +495,7 @@ def stylus_set_button_action(ctx, button: str, action: str, keybinding: str | No
             msg = "Keybinding is only valid for action keybinding"
             raise click.UsageError(msg)
 
-    settings = ctx.obj.settings
+    settings = ctx.obj
 
     button_prefix = {
         "primary": "button",

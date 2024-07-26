@@ -49,6 +49,7 @@ line-length = 120
 ignore = [
   "FBT001",  # FBT001 Boolean-typed positional argument in function definition
   "S320",    # S320 Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
+  "S101",    # S101 Use of `assert` detectd
 ]
 
 [tool.hatch.version]

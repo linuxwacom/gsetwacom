@@ -15,12 +15,42 @@ from pathlib import Path
 import click
 import dbus_fast
 import dbus_fast.aio
+import pyudev
 import rich.logging
 from gi.repository import Gio, GLib  # type: ignore
 
 logger = logging.getLogger("uji")
 logger.addHandler(rich.logging.RichHandler())
 logger.setLevel(logging.ERROR)
+
+
+@dataclass
+class Tablet:
+    name: str
+    vid: int
+    pid: int
+
+
+def list_tablets():
+    context = pyudev.Context()
+    for device in filter(
+        lambda d: Path(d.sys_path).name.startswith("event"),
+        context.list_devices(subsystem="input"),
+    ):
+        if (
+            device.get("ID_INPUT_TABLET", "0") != "1"
+            or device.get("ID_INPUT_TABLET_PAD", "0") == "1"
+            or device.get("ID_INPUT_TOUCHPAD", "0") == "1"
+        ):
+            continue
+
+        vid = int(device.get("ID_VENDOR_ID", "0"), 16)
+        pid = int(device.get("ID_MODEL_ID", "0"), 16)
+        name = device.get("NAME")
+        if name is None:
+            name = next(device.ancestors).get("NAME")
+        name = name.lstrip('"').rstrip('"')
+        yield Tablet(name, vid, pid)
 
 
 @dataclass
@@ -71,43 +101,16 @@ def gsetwacom(verbose: int):
     logger.setLevel(verbose_levels.get(verbose, 0))
 
 
-@gsetwacom.command()
-def list_tablets():
+@gsetwacom.command(name="list-tablets")
+def cmd_list_tablets():
     """
     List all potential devices found on this system.
 
     This uses udev, a device listed here may not be available in the
     compositor and/or currently have configuration set.
     """
-    import pyudev
 
-    @dataclass
-    class Tablet:
-        name: str
-        vid: int
-        pid: int
-
-    tablets = []
-    context = pyudev.Context()
-    for device in filter(
-        lambda d: Path(d.sys_path).name.startswith("event"),
-        context.list_devices(subsystem="input"),
-    ):
-        if (
-            device.get("ID_INPUT_TABLET", "0") != "1"
-            or device.get("ID_INPUT_TABLET_PAD", "0") == "1"
-            or device.get("ID_INPUT_TOUCHPAD", "0") == "1"
-        ):
-            continue
-
-        vid = int(device.get("ID_VENDOR_ID", "0"), 16)
-        pid = int(device.get("ID_MODEL_ID", "0"), 16)
-        name = device.get("NAME")
-        if name is None:
-            name = next(device.ancestors).get("NAME")
-        name = name.lstrip('"').rstrip('"')
-        tablets.append(Tablet(name, vid, pid))
-
+    tablets = list(list_tablets())
     if not tablets:
         click.secho("No devices found")
         return
@@ -118,8 +121,8 @@ def list_tablets():
         click.echo(f'  usbid: "{tablet.vid:04X}:{tablet.pid:04X}"')
 
 
-@gsetwacom.command()
-def list_styli():
+@gsetwacom.command(name="list-styli")
+def cmd_list_styli():
     """
     List the styli previously seen on this system.
 

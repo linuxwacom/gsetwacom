@@ -26,7 +26,7 @@ logger.setLevel(logging.ERROR)
 @dataclass
 class Settings:
     path: str
-    settings: Gio.Settings | None
+    settings: Gio.Settings
 
 
 @click.group()

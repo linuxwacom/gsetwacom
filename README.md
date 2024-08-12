@@ -1,7 +1,5 @@
 # gsetwacom
 
-**This is pre-alpha software, it's merely a PoC right now**
-
 gsetwacom is a commandline utility that changes tablet configuration in
 GNOME. It provides a CLI around the GSettings schemas that allows.
 

@@ -44,9 +44,23 @@ $ gsetwacom list-tablets
 devices:
 - name: "HUION Huion Tablet_H641P Pen"
   usbid: "256C:0066"
+  settings:
+    area: [0.0, 0.0, 0.0, 0.0]
+    keep-aspect: false
+    left-handed: false
+    mapping: 'absolute'
+    output: ['', '', '']
 - name: "Wacom Intuos Pro M Pen"
   usbid: "056A:0357"
-
+  settings:
+    area: [0.0, 0.0, 0.0, 0.0]
+    keep-aspect: true
+    left-handed: false
+    mapping: 'absolute'
+    output: ['GSM', 'LG HDR 4K', '308NTXRBZ298', 'DP-1']
+```
+Or to only show the settings for a single tablet
+```
 $ gsetwacom tablet "056A:0357" show
 settings:
   area: [0.0, 0.0, 0.0, 0.0]
@@ -54,7 +68,9 @@ settings:
   left-handed: false
   mapping: 'absolute'
   output: ['GSM', 'LG HDR 4K', '308NTXRBZ298', 'DP-1']
-
+````
+And to modify the settings for one tablet:
+```
 $ gsetwacom tablet "056A:0357" set-left-handed true
 $ gsetwacom tablet "056A:0357" set-button-action A keybinding "<Control><Alt>t"
 $ gsetwacom tablet "056A:0357" set-ring-action --direction=cw --mode=2 keybinding "x"
@@ -63,6 +79,19 @@ $ gsetwacom tablet "056A:0357" map-to-monitor --connector DP-1
 ```
 And for stylus configuration:
 ```
+$ gsetwacom list-styli
+styli:
+- serial number: 99800b93
+  settings:
+    pressure-curve: [0, 38, 62, 100]
+    eraser-pressure-curve: [0, 0, 100, 100]
+    button-action: 'default'
+    secondary-button-action: 'default'
+    tertiary-button-action: 'default'
+```
+And to show or modify the settings for one stylus:
+```
+$ gsetwacom stylus "99899b93" show
 settings:
   pressure-curve: [0, 38, 62, 100]
   eraser-pressure-curve: [0, 0, 100, 100]
@@ -71,7 +100,6 @@ settings:
   tertiary-button-action: 'default'
 
 $ gsetwacom stylus 99800b93 set-button-action secondary back
-
 
 # Huion styli don't have a serial number so we just specify the tablet vid/pid
 $ gsetwacom stylus "0256C:0066" set-button-action primary middle

@@ -161,6 +161,8 @@ def list_tablets():
     for tablet in tablets:
         click.echo(f'- name: "{tablet.name}"')
         click.echo(f'  usbid: "{tablet.vid:04X}:{tablet.pid:04X}"')
+        settings = Settings.for_tablet(tablet.vid, tablet.pid)
+        print_tablet_settings(settings, indent=2)
 
 
 @gsetwacom.command()
@@ -186,6 +188,9 @@ def list_styli():
     click.echo("styli:")
     for section in config.sections():
         click.echo(f"- serial number: {section}")
+        serial = int(section, 16)
+        settings = Settings.for_stylus_with_serial(serial)
+        print_stylus_settings(settings, indent=2)
 
 
 @gsetwacom.group()

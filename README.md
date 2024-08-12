@@ -23,7 +23,7 @@ similar utility for KDE.
 ## Installation
 
 ```console
-pip install git+https://github.com/whot/gsetwacom
+pip install git+https://github.com/linuxwacom/gsetwacom
 ```
 
 ## Usage

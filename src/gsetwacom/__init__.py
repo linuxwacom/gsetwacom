@@ -77,6 +77,33 @@ class Settings:
         return cls(path, Gio.Settings.new_with_path(schema, path))
 
 
+def print_tablet_settings(settings, indent=0):
+    indent = " " * indent
+    keys = ("area", "keep-aspect", "left-handed", "mapping", "output")
+    click.echo(f"{indent}settings:")
+    for key in filter(lambda k: settings.has_key(k), keys):
+        click.echo(f"{indent}  {key}: {settings.get_value(key)}")
+
+
+def print_stylus_settings(settings, indent=0):
+    keys = (
+        "pressure-curve",
+        "eraser-pressure-curve",
+        "pressure-range",
+        "eraser-pressure-range",
+        "button-action",
+        "secondary-button-action",
+        "tertiary-button-action",
+        "button-keybinding",
+        "secondary-button-keybinding",
+        "tertiary-button-keybinding",
+    )
+    indent = " " * indent
+    click.echo(f"{indent}settings:")
+    for key in filter(lambda k: settings.has_key(k), keys):
+        click.echo(f"{indent}  {key}: {settings.get_value(key)}")
+
+
 @click.group()
 @click.option("-v", "--verbose", count=True, help="increase verbosity")
 @click.option("--quiet", "verbose", flag_value=0)
@@ -180,11 +207,7 @@ def tablet_show(ctx):
     """
     Show the current configuraton of the given tablet DEVICE.
     """
-    settings = ctx.obj
-    keys = ("area", "keep-aspect", "left-handed", "mapping", "output")
-    click.echo("settings:")
-    for key in filter(lambda k: settings.has_key(k), keys):
-        click.echo(f"  {key}: {settings.get_value(key)}")
+    print_tablet_settings(ctx.obj)
 
 
 @tablet.command(name="set-left-handed")
@@ -432,22 +455,7 @@ def stylus_show(ctx):
     """
     Show the current configuraton of the given STYLUS.
     """
-    settings = ctx.obj
-    keys = (
-        "pressure-curve",
-        "eraser-pressure-curve",
-        "pressure-range",
-        "eraser-pressure-range",
-        "button-action",
-        "secondary-button-action",
-        "tertiary-button-action",
-        "button-keybinding",
-        "secondary-button-keybinding",
-        "tertiary-button-keybinding",
-    )
-    click.echo("settings:")
-    for key in filter(lambda k: settings.has_key(k), keys):
-        click.echo(f"  {key}: {settings.get_value(key)}")
+    print_stylus_settings(ctx.obj)
 
 
 @stylus.command(name="set-pressure-curve")

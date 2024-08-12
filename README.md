@@ -31,11 +31,12 @@ pip install git+https://github.com/linuxwacom/gsetwacom
 `gsetwacom` splits its commands into a `tablet` and `stylus` group, commands typically
 follow this invocation:
 ```
-$ gsetwacom tablet $tablet-vid-pid <subcommand>
-$ gsetwacom stylus $stylus-serial <subcommand>
+$ gsetwacom tablet $TABLET_VID_PID <subcommand>
+$ gsetwacom stylus $STYLUS_SERIAL <subcommand>
 ```
-Where identifier is the vid/pid of the tablet or the serial of the stylus.
-For details on any command see `gsetwacom --help` or `gsetwacom <command> --help`.
+Where `$TABLET-VID-PID` is the vid/pid of the tablet and `$STYLUS-SERIAL` is
+the serial of stylus. For details on any command see `gsetwacom --help` or
+`gsetwacom <command> --help`.
 
 Examples for tablet configuration:
 ```
@@ -137,10 +138,10 @@ Because it bypasses mutter, xsetwacom is not aware of the GNOME configuration an
 will thus overwrite any other configuration. Likewise, xsetwacom configuration
 will be overwritten when mutter applies configuration based on the gsettings.
 
-However, because xsetwwacom bypasses mutter it can support any configuration
+However, because xsetwacom bypasses mutter it can support any configuration
 supported by the xf86-input-wacom driver.
 
-**xsetwaco cannot work under Wayland because it requires the xf86-input-wacom
+**xsetwacom cannot work under Wayland because it requires the xf86-input-wacom
 Xorg driver to manage the tablet device**
 
 

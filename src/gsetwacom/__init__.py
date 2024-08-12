@@ -185,7 +185,7 @@ def list_styli():
 
     click.echo("styli:")
     for section in config.sections():
-        click.echo(f" - serial number: {section}")
+        click.echo(f"- serial number: {section}")
 
 
 @gsetwacom.group()

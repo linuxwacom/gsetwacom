@@ -58,6 +58,24 @@ class Settings:
     def get_value(self, key):
         return self.settings.get_value(key)
 
+    @classmethod
+    def for_tablet(cls, vid: int, pid: int):
+        path = f"/org/gnome/desktop/peripherals/tablets/{vid:04x}:{pid:04x}/"
+        schema = "org.gnome.desktop.peripherals.tablet"
+        return cls(path, Gio.Settings.new_with_path(schema, path))
+
+    @classmethod
+    def for_stylus_with_serial(cls, serial):
+        path = f"/org/gnome/desktop/peripherals/stylus/{serial:x}/"
+        schema = "org.gnome.desktop.peripherals.tablet.stylus"
+        return cls(path, Gio.Settings.new_with_path(schema, path))
+
+    @classmethod
+    def for_stylus(cls, vid: int, pid: int):
+        path = f"/org/gnome/desktop/peripherals/stylus/default-{vid:04x}:{pid:04x}/"
+        schema = "org.gnome.desktop.peripherals.tablet.stylus"
+        return cls(path, Gio.Settings.new_with_path(schema, path))
+
 
 @click.group()
 @click.option("-v", "--verbose", count=True, help="increase verbosity")
@@ -153,9 +171,7 @@ def tablet(ctx, device):
     DEVICE is a vendor/product ID tuple in the form 1234:abcd.
     """
     vid, pid = (int(x, 16) for x in device.split(":"))
-    path = f"/org/gnome/desktop/peripherals/tablets/{vid:04x}:{pid:04x}/"
-    schema = "org.gnome.desktop.peripherals.tablet"
-    ctx.obj = Settings(path, Gio.Settings.new_with_path(schema, path))
+    ctx.obj = Settings.for_tablet(vid, pid)
 
 
 @tablet.command(name="show")
@@ -402,14 +418,12 @@ def stylus(ctx, stylus):
     """
     if ":" in stylus:
         vid, pid = (int(x, 16) for x in stylus.split(":"))
-        serial = f"default-{vid:04x}:{pid:04x}"
+        settings = Settings.for_stylus(vid, pid)
     else:
         serial = int(stylus, 16)
-        serial = f"{serial:x}"
+        settings = Settings.for_stylus_with_serial(serial)
 
-    path = f"/org/gnome/desktop/peripherals/stylus/{serial}/"
-    schema = "org.gnome.desktop.peripherals.tablet.stylus"
-    ctx.obj = Settings(path, Gio.Settings.new_with_path(schema, path))
+    ctx.obj = settings
 
 
 @stylus.command(name="show")

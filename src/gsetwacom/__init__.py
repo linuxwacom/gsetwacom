@@ -82,7 +82,11 @@ def print_tablet_settings(settings, indent=0):
     keys = ("area", "keep-aspect", "left-handed", "mapping", "output")
     click.echo(f"{indent}settings:")
     for key in filter(lambda k: settings.has_key(k), keys):
-        click.echo(f"{indent}  {key}: {settings.get_value(key)}")
+        value = settings.get_value(key)
+        comment = ""
+        if key == "output" and all(not v for v in value):
+            comment = "  # not mapped to any monitor"
+        click.echo(f"{indent}  {key}: {value}{comment}")
 
 
 def print_stylus_settings(settings, indent=0):

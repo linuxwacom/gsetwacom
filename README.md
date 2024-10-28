@@ -49,7 +49,7 @@ devices:
     keep-aspect: false
     left-handed: false
     mapping: 'absolute'
-    output: ['', '', '']
+    output: ['', '', '']  # not mapped to any monitor
 - name: "Wacom Intuos Pro M Pen"
   usbid: "056A:0357"
   settings:

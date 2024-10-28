@@ -105,6 +105,11 @@ $ gsetwacom stylus 99800b93 set-button-action secondary back
 $ gsetwacom stylus "0256C:0066" set-button-action primary middle
 ```
 
+## Troubleshooting
+
+**Empty output:**  
+Gsetwacom will not list the available displays for you, and an unmapped tablet will always return `output:['', '', '']`. To map this tablet to a known display, go to GNOME Preferences, under the Displays, and note the name of the display. This name will be the `--vendor` name for gsetwacom. You can then apply it with `gsetwacom tablet "256C:006B" map-to-monitor --vendor HAT`.
+
 ## Architecture
 
 On a typical GNOME desktop there are two configuration stages:

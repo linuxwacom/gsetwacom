@@ -279,13 +279,10 @@ def coro(f):
 @click.option("--product", type=str, default=None)
 @click.option("--serial", type=str, default=None)
 @click.option("--connector", type=str, default=None)
+@click.option("--list-monitors", is_flag=True, default=False, help="List all currently connected monitors")
 @click.pass_context
 async def tablet_map_to_monitor(
-    ctx,
-    vendor: str | None,
-    product: str | None,
-    serial: str | None,
-    connector: str | None,
+    ctx, vendor: str | None, product: str | None, serial: str | None, connector: str | None, list_monitors: bool
 ):
     """
     Map the tablet to a given monitor. The monitor may be specified with one or more
@@ -297,7 +294,7 @@ async def tablet_map_to_monitor(
         "product": product,
         "serial": serial,
     }
-    if all(args[key] is None for key in args):
+    if not list_monitors and all(args[key] is None for key in args):
         msg = "One of --vendor, --product, --serial or --connector has to be provided"
         raise click.UsageError(msg)
 
@@ -320,24 +317,32 @@ async def tablet_map_to_monitor(
         product: str
         serial: str
 
-    monitors = (Monitor(*mdata) for (mdata, *_) in monitors)
+    monitors = [Monitor(*mdata) for (mdata, *_) in monitors]
 
-    for monitor in monitors:
-        logger.info("Monitor on %s vendor '%s' product '%s' serial '%s'", *asdict(monitor).values())
-        if any(args[key] is not None and args[key] != getattr(monitor, key) for key in args):
-            continue
-        settings = ctx.obj
-        settings.set_value(
-            "output",
-            GLib.Variant(
-                "as",
-                [monitor.vendor, monitor.product, monitor.serial, monitor.connector],
-            ),
-        )
-        break
+    def print_list():
+        msg = [f"- on {m.connector}: '{m.vendor}' '{m.product}' with serial no '{m.serial}'" for m in monitors]
+        return "\n".join(msg)
+
+    if list_monitors:
+        click.echo(print_list())
     else:
-        msg = "Unable to find this monitor in the current configuration"
-        raise click.UsageError(msg)
+        for monitor in monitors:
+            logger.info("Monitor on %s vendor '%s' product '%s' serial '%s'", *asdict(monitor).values())
+            if any(args[key] is not None and args[key] != getattr(monitor, key) for key in args):
+                continue
+            settings = ctx.obj
+            settings.set_value(
+                "output",
+                GLib.Variant(
+                    "as",
+                    [monitor.vendor, monitor.product, monitor.serial, monitor.connector],
+                ),
+            )
+            break
+        else:
+            msg = f"Unable to find this monitor in the current configuration. Available monitors:\n{print_list()}"
+
+            raise click.UsageError(msg)
 
 
 def change_action(path: str, action: str, keybinding: str | None):

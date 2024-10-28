@@ -75,6 +75,9 @@ $ gsetwacom tablet "056A:0357" set-left-handed true
 $ gsetwacom tablet "056A:0357" set-button-action A keybinding "<Control><Alt>t"
 $ gsetwacom tablet "056A:0357" set-ring-action --direction=cw --mode=2 keybinding "x"
 
+$ gsetwacom tablet "056A:0357" map-to-monitor --list-monitors
+- on DP-1: 'GSM' 'LG HDR 4K' with serial no '12345'
+- on HDMI-2: 'GSM' 'LG HDR 4K' with serial no '67890'
 $ gsetwacom tablet "056A:0357" map-to-monitor --connector DP-1
 ```
 And for stylus configuration:

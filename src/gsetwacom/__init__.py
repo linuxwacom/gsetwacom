@@ -541,6 +541,9 @@ def stylus_set_button_action(ctx, button: str, action: str, keybinding: str | No
 
     if keybinding is not None:
         key = f"{button_prefix}-keybinding"
+        if action == "keybinding" and not settings.has_key(key):
+            click.secho("Stylus button keybindings require GNOME 47 or later, aborting")
+            return
         settings.set_string(key, keybinding)
 
     key = f"{button_prefix}-action"

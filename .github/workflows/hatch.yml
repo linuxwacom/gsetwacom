@@ -3,6 +3,7 @@ on: [push, pull_request]
 
 env:
   UBUNTU_PACKAGES: python3-gi
+  UBUNTU_TEST_PACKAGES: gobject-introspection pkgconf libcairo2-dev libgirepository-1.0-dev
   PIP_PACKAGES: hatch
 
 jobs:
@@ -30,6 +31,6 @@ jobs:
           python-version: '3.12'
       - uses: linuxwacom/libwacom/.github/actions/pkginstall@master
         with:
-          apt: $UBUNTU_PACKAGES gobject-introspection pkgconf libcairo2-dev libgirepository-1.0-dev
+          apt: $UBUNTU_PACKAGES $UBUNTU_TEST_PACKAGES
           pip: $PIP_PACKAGES
       - run: hatch run test

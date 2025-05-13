@@ -399,6 +399,32 @@ def tablet_set_ring_action(ctx, ring: int, mode: int, direction: str, action: st
     change_action(path, action, keybinding)
 
 
+@tablet.command(name="set-dial-action")
+@click.option("--dial", type=int, default=1, help="The dial number to change")
+@click.option("--mode", type=int, default=0, help="The zero-indexed mode")
+@click.option(
+    "--direction",
+    type=click.Choice(["cw", "ccw"]),
+    default="cw",
+    help="The dial movement direction",
+)
+@click.argument("action", type=click.Choice(["none", "help", "switch-monitor", "keybinding"]))
+@click.argument(
+    "keybinding",
+    type=str,
+    required=False,
+)
+@click.pass_context
+def tablet_set_dial_action(ctx, dial: int, mode: int, direction: str, action: str, keybinding: str | None):
+    """
+    Change the action the tablet dial is mapped to for a movement direction and in a given mode.
+    """
+    r = chr(ord("A") + dial - 1)  # dial 1 -> dialA
+    subpath = f"dial{r}-{direction}-mode-{mode}"
+    path = f"{ctx.obj.path}{subpath}/"
+    change_action(path, action, keybinding)
+
+
 @tablet.command(name="set-strip-action")
 @click.option("--strip", type=int, default=1, help="The strip number to change")
 @click.option("--mode", type=int, default=0, help="The zero-indexed mode")

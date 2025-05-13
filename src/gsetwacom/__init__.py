@@ -18,7 +18,7 @@ import dbus_fast.aio
 import rich.logging
 from gi.repository import Gio, GLib  # type: ignore
 
-logger = logging.getLogger("uji")
+logger = logging.getLogger("gsetwacom")
 logger.addHandler(rich.logging.RichHandler())
 logger.setLevel(logging.ERROR)
 

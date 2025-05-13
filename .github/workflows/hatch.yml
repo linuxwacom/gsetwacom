@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 env:
   UBUNTU_PACKAGES: python3-gi
-  UBUNTU_TEST_PACKAGES: gobject-introspection pkgconf libcairo2-dev libgirepository-1.0-dev
+  UBUNTU_TEST_PACKAGES: gobject-introspection pkgconf libcairo2-dev libgirepository-2.0-dev
   PIP_PACKAGES: hatch
 
 jobs:

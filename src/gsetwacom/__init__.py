@@ -577,6 +577,52 @@ def stylus_set_button_action(ctx, button: str, action: str, keybinding: str | No
     settings.set_enum(key, val)
 
 
+@stylus.command(name="set-eraser-button-action")
+@click.argument(
+    "action",
+    type=click.Choice(["eraser", "left", "middle", "right", "back", "forward", "switch-monitor", "keybinding"]),
+)
+@click.argument(
+    "keybinding",
+    type=str,
+    required=False,
+)
+@click.pass_context
+def stylus_eraser_set_button_action(ctx, action: str, keybinding: str | None):
+    """
+    Change the eraser button action of this stylus.
+
+    This action is only available on styli with an eraser button, not on
+    styli with an eraser at the other end of the stylus.
+    """
+    if action == "keybinding":
+        if keybinding is None:
+            msg = "Keybinding must be provided for action keybinding"
+            raise click.UsageError(msg)
+    else:  # noqa: PLR5501
+        if keybinding is not None:
+            msg = "Keybinding is only valid for action keybinding"
+            raise click.UsageError(msg)
+
+    settings = ctx.obj
+
+    if not settings.has_key("eraser-button-mode"):
+        click.secho("Eraser button mapping requires GNOME 50 or later, aborting")
+        return
+
+    if keybinding is not None:
+        settings.set_string("eraser-button-keybinding", keybinding)
+
+    if action == "eraser":
+        settings.set_enum("eraser-button-mode", 0)
+    else:
+        val = {"left": 0, "middle": 1, "right": 2, "back": 3, "forward": 4, "switch-monitor": 5, "keybinding": 6}[
+            action
+        ]
+        settings.set_enum("eraser-button-action", val)
+        settings.set_enum("eraser-button-mode", 1)
+
+
 def main():
     gsetwacom()
 

@@ -8,6 +8,7 @@ import asyncio
 import logging
 import os
 import string
+from configparser import ConfigParser
 from dataclasses import asdict, dataclass
 from functools import wraps
 from pathlib import Path
@@ -15,6 +16,7 @@ from pathlib import Path
 import click
 import dbus_fast
 import dbus_fast.aio
+import pyudev
 import rich.logging
 from gi.repository import Gio, GLib  # type: ignore
 
@@ -128,7 +130,6 @@ def list_tablets():
     This uses udev, a device listed here may not be available in the
     compositor and/or currently have configuration set.
     """
-    import pyudev
 
     @dataclass
     class Tablet:
@@ -180,7 +181,6 @@ def list_styli():
     be available until it has been brought into proximity above the
     control center.
     """
-    from configparser import ConfigParser
 
     xdg = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
     config = ConfigParser()

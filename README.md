@@ -107,6 +107,29 @@ $ gsetwacom stylus 99800b93 set-button-action secondary back
 # Huion styli don't have a serial number so we just specify the tablet vid/pid
 $ gsetwacom stylus "0256C:0066" set-button-action primary middle
 ```
+And to show the subcommands supported for stylus:
+```
+$ gsetwacom stylus --help
+  set-button-action         Change the button action of this stylus or...
+  set-eraser-button-action  Change the eraser button action of this stylus.
+  set-pressure-curve        Change the pressure configuration of this...
+  set-pressure-range        Change the pressure range of this stylus or...
+  show                      Show the current configuraton of the given...
+```
+And to show the subcommands supported for tablet:
+```
+$ gsetwacom tablet --help
+  map-to-monitor     Map the tablet to a given monitor.
+  set-absolute       Change the left-handed configuration of this device
+  set-area           Change the area the tablet is mapped to.
+  set-button-action  Change the action the tablet button is mapped to.
+  set-dial-action    Change the action the tablet dial is mapped to for a...
+  set-keep-aspect    Change the keep-aspect configuration of this device
+  set-left-handed    Change the left-handed configuration of this device
+  set-ring-action    Change the action the tablet ring is mapped to for a...
+  set-strip-action   Change the action the tablet strip is mapped to for...
+  show               Show the current configuraton of the given tablet...
+```
 
 ## Architecture
 
